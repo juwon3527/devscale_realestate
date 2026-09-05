@@ -1,0 +1,51 @@
+name: Build Workflow
+on:
+  push:
+    branches:
+      - feature/juwon
+
+jobs:
+  Test the application:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+        - name: Set up Go
+          uses: actions/setup-go@v7
+          with:
+            go-version: '1.23'
+
+        - name: Run tests
+          run: go test ./...
+
+Build_and_Upload artifact:
+    runs-on: ubuntu-latest
+    needs: Test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: '1.23'
+
+      - name: Build the application
+        run: go build -o realestate
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: realestate
+          path: realestate
+
+Download_artifact:
+    runs-on: ubuntu-latest
+    needs: Build_and_Upload
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: realestate
+          path: realestate
